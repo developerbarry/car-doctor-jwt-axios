@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../AuthProvider/AuthProvider";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 
 const LogInPage = () => {
 
@@ -21,8 +22,19 @@ const LogInPage = () => {
 
         userSignIn(email, password)
             .then(userCredential => {
-                const user = userCredential.user;
-                if (user) {
+                const loggedInUser = userCredential.user;
+
+                const user = { email };
+                axios.post('http://localhost:5000/jwt', user)
+                    .then(res => {
+                        console.log(res.data)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+
+
+                if (loggedInUser) {
                     nagivate(location?.state ? location?.state : '/')
                 }
 
