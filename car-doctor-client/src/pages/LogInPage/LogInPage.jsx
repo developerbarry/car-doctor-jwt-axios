@@ -25,15 +25,16 @@ const LogInPage = () => {
                 const loggedInUser = userCredential.user;
                 console.log(loggedInUser)
 
-                const userEmail = { email }
+                const userEmail = { email };
                 axios.post('http://localhost:5000/jwt', userEmail, {
                     withCredentials: true
                 })
                     .then(res => {
-                        console.log(res.data)
-                        if (res.data.success) {
+                        const data = res.data.success;
+                        if (data) {
                             nagivate(location?.state ? location?.state : '/')
                         }
+                        console.log(data)
                     })
                     .catch(error => {
                         console.log(error)

@@ -13,7 +13,7 @@ const OrderPage = () => {
         // fetch(`http://localhost:5000/bookings?email=${user?.email}`)
         //     .then(res => res.json())
         //     .then(data => setOrders(data))
-        
+
         axios.get(`http://localhost:5000/bookings?email=${user?.email}`, {
             withCredentials: true
         })
