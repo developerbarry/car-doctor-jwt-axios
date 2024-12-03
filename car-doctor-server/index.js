@@ -2,14 +2,18 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const jwt = require('jsonwebtoken');
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 
 //Middleware 
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173'],
+    credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.iam7h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -37,15 +41,17 @@ async function run() {
         app.post('/jwt', async (req, res) => {
             const user = req.body;
             console.log(user);
-            const authenticationToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '1h'
+            })
 
-            res.cookie('token', authenticationToken, {
+            res.cookie('token', token, {
                 httpOnly: true,
                 secure: false,
-                maxAge: 3600000,
-                sameSite: 'none'
+                maxAge: 3600000
             })
-            res.send({success: true})
+            
+            res.send({ success: true })
         })
 
 
@@ -71,15 +77,17 @@ async function run() {
         //Bookings
 
         app.get('/bookings', async (req, res) => {
+            console.log('Token', req.cookies);
             let query = {};
             if (req.query?.email) {
-                query = { email: req.query.email }
+                query = { email: req.query.email };
             }
 
             const cursor = bookings.find(query);
             const result = await cursor.toArray();
-            res.send(result)
-        })
+            res.send(result);
+        });
+
 
         app.post('/bookings', async (req, res) => {
             const bookingInfo = req.body;

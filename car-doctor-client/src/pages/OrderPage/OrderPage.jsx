@@ -3,16 +3,29 @@ import { AuthContext } from "../../AuthProvider/AuthProvider";
 import OrderTableRow from "./OrderTableRow";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
 
 const OrderPage = () => {
     const { user } = useContext(AuthContext);
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/bookings?email=${user?.email}`)
-            .then(res => res.json())
-            .then(data => setOrders(data))
+        // fetch(`http://localhost:5000/bookings?email=${user?.email}`)
+        //     .then(res => res.json())
+        //     .then(data => setOrders(data))
+        
+        axios.get(`http://localhost:5000/bookings?email=${user?.email}`, {
+            withCredentials: true
+        })
+            .then(res => {
+                setOrders(res.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
     }, [user?.email])
+
 
     const handleDeleteOrder = (id) => {
         fetch(`http://localhost:5000/bookings/${id}`, {
